@@ -6,7 +6,6 @@ import {DateTime} from 'luxon';
 
 const TasksContainer: React.FC<{list: Task[], onDelete: any}> = ({list, onDelete}: any) => {
 
-    console.log(list)
     return (
         <Stack spacing={1}>
                         {

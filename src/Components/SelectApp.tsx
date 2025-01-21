@@ -3,7 +3,7 @@ import { useField } from "formik";
 
 export const SelectApp = ({label, labelId, ...props}: any) => {
 
-    let [field, meta, helpers] = useField(props);
+    let [field, meta ] = useField(props);
 
     return (
         <FormControl fullWidth error={(meta.error != undefined && meta.touched)}>

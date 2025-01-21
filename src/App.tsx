@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { Box, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import useTasks from "./Hooks/useTasks";
 import CreateTaksForm from "./Components/CreateTaskForm";
 import DisplayLog from "./Components/DisplayLog";
 import TasksContainer from "./Components/TasksContainer";
+import useNotifications from "./Hooks/useNotifications";
 
 
 function App() {
 	
-
     let [appLog, setAppLog] = useState<String[]>([]);
 
     let { databaseLog, addTask, deleteTask, list} = useTasks();
 
+    let { hasPermission, askPermission} = useNotifications();
+    
     let log = [...appLog, ...databaseLog];
 
     useEffect(() => {
@@ -37,6 +39,10 @@ function App() {
             <CreateTaksForm
                 addTask={addTask}
             />
+
+           {
+                !hasPermission && <Button onClick={() => askPermission()}>Activar notificaciones</Button>
+           }
 
             <DisplayLog
                 log={log}

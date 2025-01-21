@@ -54,8 +54,6 @@ const useTasks = () => {
 
             setDatabase(db)
             
-            recoverAllList(db);
-            
             setDatabaseLog([...databaseLog, "Object store created successfully"])
         }
     }, [])
