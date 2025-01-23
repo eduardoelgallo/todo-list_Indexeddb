@@ -34,6 +34,7 @@ const CreateTaksForm = ({addTask}: any) => {
         day: "",
         month: "",
         year: "",
+		notified: "no"
     }
 
 
@@ -45,8 +46,6 @@ const CreateTaksForm = ({addTask}: any) => {
 				let task = { ...values, notified: "no" };
 
 				setTimeout(() => {
-					console.log(task);
-
 					addTask(task);
 
                     // Reset form
@@ -91,6 +90,7 @@ const CreateTaksForm = ({addTask}: any) => {
 									variant="outlined"
 									type="text"
 									fullWidth
+									size="small"
 								/>
 							</Grid>
 							<Grid size={6}>
@@ -101,6 +101,7 @@ const CreateTaksForm = ({addTask}: any) => {
 									variant="outlined"
 									type="text"
 									fullWidth
+									size="small"
 								/>
 							</Grid>
 
@@ -108,11 +109,12 @@ const CreateTaksForm = ({addTask}: any) => {
 								<TextField
 									id="minutes"
 									label="Minutos (mm)"
-									variant="filled"
+									variant="outlined"
 									fullWidth
 									onChange={handleChange}
 									onBlur={handleBlur}
 									value={values.minutes}
+									size="small"
 									error={
 										errors.hasOwnProperty("minutes") &&
 										touched.minutes
@@ -133,6 +135,7 @@ const CreateTaksForm = ({addTask}: any) => {
 									labelId="day-select-label"
 									type="select"
 									name="day"
+									size="small"
 									renderValue={(value: any) => {
 										return (
 											<Typography variant="body1">
@@ -163,6 +166,17 @@ const CreateTaksForm = ({addTask}: any) => {
 										18,
 										19,
 										20,
+										21,
+										22,
+										23,
+										24,
+										25,
+										26,
+										27,
+										28,
+										29,
+										30,
+										31,
 									].map((day) => (
 										<MenuItem key={day} value={day}>
 											<EventIcon /> {day}
@@ -173,6 +187,7 @@ const CreateTaksForm = ({addTask}: any) => {
 							<Grid size={4}>
 								<FormControl
 									fullWidth
+									size="small"
 									error={
 										errors.hasOwnProperty("month") &&
 										touched.month
@@ -220,6 +235,7 @@ const CreateTaksForm = ({addTask}: any) => {
 							<Grid size={4}>
 								<FormControl
 									fullWidth
+									size="small"
 									error={
 										errors.hasOwnProperty("year") &&
 										touched.year

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Task from "../Interfaces/Task";
+import { DateTime } from "luxon";
 
 const useTasks = () => {
 
@@ -32,7 +33,7 @@ const useTasks = () => {
 
         databaseRequest.onerror = (event: Event): any => {
             setDatabaseLog([...databaseLog, "Error loading database."])
-            console.log(event)
+
         }
 
         databaseRequest.onupgradeneeded = (event: IDBVersionChangeEvent): any => {
@@ -55,6 +56,12 @@ const useTasks = () => {
             setDatabase(db)
             
             setDatabaseLog([...databaseLog, "Object store created successfully"])
+        }
+
+        let intervalId = setInterval(checkdeadlines, 1000);
+
+        return () => {
+            clearInterval(intervalId);
         }
     }, [])
 
@@ -118,7 +125,6 @@ const useTasks = () => {
         }
 
         let transaction = database.transaction("toDolist", "readwrite")
-        console.log(transaction)
         
         transaction.objectStore("toDolist").delete(task.title);
 
@@ -126,6 +132,59 @@ const useTasks = () => {
             recoverAllList();
             setDatabaseLog((log) => [...log, "Task deleted."]);
         };
+    }
+
+    const checkdeadlines = () => {
+        if (!database){
+            return;
+        }
+
+        const now = (DateTime.now()).set({second: 0, millisecond: 0});
+
+        const objectStore = database.transaction("toDolist", "readwrite").objectStore("toDolist");
+
+        objectStore.openCursor().onsuccess = (event: Event) => {
+
+            const cursor: IDBCursorWithValue = (event.target as IDBRequest).result;
+
+            if (!cursor) {
+                return;
+            }
+            let task: Task = cursor.value
+
+            let taskTime = DateTime.fromFormat(`${task.year}-${task.month}-${task.day} ${task.hour}:${task.minutes}:00`, "y-m-d hh:mm:ss")
+                       
+            if (now.equals(taskTime) && task.notified == "no") {
+                if (Notification.permission == "granted") {
+                    createNotification(task);
+                }
+            }
+
+            cursor.continue();
+        } 
+        
+    }
+
+    const createNotification = (task: Task) => {
+
+        if (!database) {
+            return;
+        }
+
+        const img = '/to-do-notifications/img/icon-128.png';
+        const text = `HEY! Your task "${task.title}" is now overdue.`;
+
+        const notification = new Notification("To do List", {body: text, icon: img});
+        
+        let objectStore = database.transaction("toDolist", "readwrite").objectStore("toDolist");
+
+        task.notified = "yes";
+
+        let updateRequest = objectStore.put(task);
+
+        updateRequest.onsuccess = (event: Event) => {
+            recoverAllList();
+        }
     }
 
     return {
