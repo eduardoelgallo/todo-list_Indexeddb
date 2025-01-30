@@ -1,19 +1,19 @@
 import React from 'react';
 import { Alert, Stack } from "@mui/material";
-import Task from '../Interfaces/Task';
 import {DateTime} from 'luxon';
+import Task from '../Domain/Task';
 
 
-const TasksContainer: React.FC<{list: Task[], onDelete: any}> = ({list, onDelete}: any) => {
+const TasksContainer: React.FC<{list: Task[], onDelete: (task: Task) => void}> = ({list, onDelete}) => {
 
     return (
         <Stack spacing={1}>
                         {
-                list.map((task: any, index: any) => (
+                list.map((task: Task, index: number) => (
                     <Alert 
                         key={index} 
                         variant="filled"
-                        severity={task.notified == "yes" ? "success" : "info"}
+                        severity={task.isNotified() ? "success" : "info"}
                         onClose={() => {
                             onDelete(task)
                         }}

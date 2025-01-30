@@ -5,7 +5,10 @@ import * as yup from 'yup';
 import EventIcon from '@mui/icons-material/Event';
 import { TextFieldApp } from "./TextFieldApp";
 import { SelectApp } from "./SelectApp";
-import Task from "../Interfaces/Task";
+import ITask from "../Interfaces/ITask";
+import React from "react";
+import TaskFactory from "../Services/Factories/TaskFactory";
+import Task from "../Domain/Task";
 
 
 const validationSchema = yup.object({
@@ -24,10 +27,10 @@ const validationSchema = yup.object({
   });
   
 
-const CreateTaksForm = ({addTask}: any) => {
+const CreateTaksForm: React.FC<{addTask: (task: Task) => void}>= ({addTask}) => {
 
 
-    let initialValue: Task = {
+    let initialValue: ITask = {
         title: "",
         hour: "",
         minutes: "",
@@ -43,12 +46,11 @@ const CreateTaksForm = ({addTask}: any) => {
 			initialValues={initialValue}
 			validationSchema={validationSchema}
 			onSubmit={(values, { setSubmitting }) => {
-				let task = { ...values, notified: "no" };
+				
+				let task = TaskFactory.createTask({ ...values, notified: "no" });
 
 				setTimeout(() => {
 					addTask(task);
-
-                    // Reset form
 
 					setSubmitting(false);
 				}, 400);

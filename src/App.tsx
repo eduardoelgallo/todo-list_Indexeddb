@@ -6,6 +6,7 @@ import CreateTaksForm from "./Components/CreateTaskForm";
 import DisplayLog from "./Components/DisplayLog";
 import TasksContainer from "./Components/TasksContainer";
 import useNotifications from "./Hooks/useNotifications";
+import Task from "./Domain/Task";
 
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
 
             <TasksContainer
                 list={list}
-                onDelete={(task: any) => {
+                onDelete={(task: Task) => {
                     deleteTask(task)
                 }}
             ></TasksContainer>

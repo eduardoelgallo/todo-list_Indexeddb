@@ -1,6 +1,6 @@
 
 
-interface Task {
+interface ITask {
     title: string | string,
     hour: number| string,
     minutes: number| string,
@@ -10,4 +10,4 @@ interface Task {
     notified: string
   }
 
-export default Task;
+export default ITask;

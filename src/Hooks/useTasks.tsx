@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import Task from "../Interfaces/Task";
 import { DateTime } from "luxon";
 import DataBase from "../Services/Database";
+import Task from "../Domain/Task";
+import TaskFactory from "../Services/Factories/TaskFactory";
 
 const useTasks = () => {
 
@@ -57,7 +58,7 @@ const useTasks = () => {
             recoverAllList();
         }).catch((err) => {
             console.log(err)
-            setDatabaseLog((log) => [...log, "Error adding task to database."])
+            setDatabaseLog((log) => [...log, "Error adding task to database."]);
         });
     }
 
@@ -67,10 +68,13 @@ const useTasks = () => {
 
         setList([]);
 
-        database.selectAll("toDolist").then((list) => {
-            console.log(list)
+        database.selectAll("toDolist").then((remoteTasks) => {
+            console.log(remoteTasks)
             setDatabaseLog((log) => [...log, "Entries all displayed."])
-            setList(list);
+
+            let tasks = TaskFactory.createTasks(remoteTasks);
+
+            setList(tasks);
         }).catch((error) => {
             console.log(error)
         })
@@ -88,22 +92,17 @@ const useTasks = () => {
     }
 
     const checkdeadlines = () => {
-        const now = (DateTime.now()).set({second: 0, millisecond: 0});
-
         database.cursor("toDolist").then((next) => {
 
             next((value: any) => {
 
-                let task: Task = value
+                let task: Task = TaskFactory.createTask(value);
 
-                let taskTime = DateTime.fromFormat(`${task.year}-${task.month}-${task.day} ${task.hour}:${task.minutes}:00`, "y-m-d hh:mm:ss")
-                        
-                if (now.equals(taskTime) && task.notified == "no") {
+                if (task.isInDeadline()) {
                     if (Notification.permission == "granted") {
                         createNotification(task);
                     }
                 }
-
             });
             
         }).catch((error) => {
@@ -117,7 +116,7 @@ const useTasks = () => {
         const img = '/to-do-notifications/img/icon-128.png';
         const text = `HEY! Your task "${task.title}" is now overdue.`;
 
-        task.notified = "yes";
+        task.makeNotifed();
 
         database.update("toDolist", task).then(() => {
 
