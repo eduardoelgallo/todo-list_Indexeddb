@@ -3,12 +3,13 @@ import Grid from '@mui/material/Grid2';
 import { Formik } from 'formik'
 import * as yup from 'yup';
 import EventIcon from '@mui/icons-material/Event';
-import { TextFieldApp } from "./TextFieldApp";
-import { SelectApp } from "./SelectApp";
-import ITask from "../Interfaces/ITask";
+import { TextFieldApp } from "../../../Components/TextFieldApp";
+import { SelectApp } from "../../../Components/SelectApp";
+import ITask from "../../../Interfaces/ITask";
 import React from "react";
-import TaskFactory from "../Services/Factories/TaskFactory";
-import Task from "../Domain/Task";
+import TaskFactory from "../../../Services/Factories/TaskFactory";
+import Task from "../../../Domain/Task";
+import useSettings from "../../../Hooks/useSettings";
 
 
 const validationSchema = yup.object({
@@ -29,6 +30,7 @@ const validationSchema = yup.object({
 
 const CreateTaksForm: React.FC<{addTask: (task: Task) => void}>= ({addTask}) => {
 
+	const { isTwentyFourHours } = useSettings();
 
     let initialValue: ITask = {
         title: "",

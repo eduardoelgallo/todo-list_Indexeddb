@@ -3,18 +3,21 @@ import { DateTime } from "luxon";
 import DataBase from "../Services/Database";
 import Task from "../Domain/Task";
 import TaskFactory from "../Services/Factories/TaskFactory";
+import useSettings from "./useSettings";
 
 const useTasks = () => {
 
     let [database, setDatabase] = useState<DataBase>(new DataBase(""));
-    let [databaseLog, setDatabaseLog] = useState<string[]>([]);
+    let {logs, addLog} = useSettings();
+
+console.log(logs)
     let [list, setList] = useState<Task[]>([]);
 
     useEffect(() => {
         const databaseObj = new DataBase((db: IDBDatabase) => {
 
             db.onerror = (event) => {
-                setDatabaseLog([...databaseLog, "Error loading database."])
+                addLog("Error loading database.")
             };
 
             const objectstore = db.createObjectStore("toDolist", { keyPath: "title"});
@@ -27,20 +30,20 @@ const useTasks = () => {
 
             objectstore.createIndex("notified", "notified", {unique: false});
 
-            setDatabaseLog([...databaseLog, "Object store created successfully"])
+            addLog("Object store created successfully")
         });
 
         setDatabase(databaseObj);
 
         databaseObj.createDatabase("todolist").then((db) => {
-            setDatabaseLog([...databaseLog, "Database opened successfully"])
+            addLog("Database opened successfully")
 
             setDatabase(databaseObj);
 
             recoverAllList(databaseObj);
 
         }).catch((error) => {
-            setDatabaseLog([...databaseLog, "Error loading database."])
+            addLog("Error loading database.")
         })
 
     
@@ -54,11 +57,11 @@ const useTasks = () => {
     
     const addTask = (task: Task) => {
         database.insert("toDolist", task).then(() => {
-            setDatabaseLog((log) => [...log, "Task added to database sucessfull."]);
+            addLog("Task added to database sucessfull.");
             recoverAllList();
         }).catch((err) => {
             console.log(err)
-            setDatabaseLog((log) => [...log, "Error adding task to database."]);
+            addLog("Error adding task to database.");
         });
     }
 
@@ -70,7 +73,7 @@ const useTasks = () => {
 
         database.selectAll("toDolist").then((remoteTasks) => {
             console.log(remoteTasks)
-            setDatabaseLog((log) => [...log, "Entries all displayed."])
+            addLog("Entries all displayed.")
 
             let tasks = TaskFactory.createTasks(remoteTasks);
 
@@ -83,10 +86,10 @@ const useTasks = () => {
     const deleteTask = (task: Task) => {
         database.delete("toDolist", task.title).then(() => {
             recoverAllList();
-            setDatabaseLog((log) => [...log, "Task deleted."]);
+            addLog("Task deleted.");
         }).catch((error) => {
             console.log(error)
-            setDatabaseLog((log) => [...log, "Can't delete."]);
+            addLog("Can't delete.");
         })
         
     }
@@ -125,12 +128,11 @@ const useTasks = () => {
             recoverAllList();
         }).catch((error) => {
             console.log(error);
-            setDatabaseLog((log) => [...log, "Can't delete."]);
+            addLog("Can't delete.");
         });
     }
 
     return {
-        databaseLog,
         addTask,
         deleteTask,
         list,

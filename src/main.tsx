@@ -1,12 +1,10 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import CssBaseline from '@mui/material/CssBaseline';
+import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
 
-createRoot(document.getElementById('root')!).render(
-  <>
-     <CssBaseline />
-    <App />
-  </>,
-)
+createRoot(document.getElementById("root")!).render(
+	<React.StrictMode>  
+		<App />
+	</React.StrictMode>
+);
