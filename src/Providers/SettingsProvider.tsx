@@ -2,7 +2,7 @@
 import React from 'react';
 import { SettingsContext } from '../Context/SettingsContext';
 
-const Settings: React.FC<{children: any}> = ({children}) => {
+const SettingsProvider: React.FC<{children: any}> = ({children}) => {
 
     let [isTwentyFourHours, setIsTwentyFourHours] = React.useState(false);
 
@@ -24,4 +24,4 @@ const Settings: React.FC<{children: any}> = ({children}) => {
     );
 };
 
-export default Settings;
+export default SettingsProvider;

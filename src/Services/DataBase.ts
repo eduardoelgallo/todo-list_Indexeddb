@@ -1,4 +1,4 @@
-class DataBase {
+class Database {
 
     connection: IDBDatabase | null = null;
     name: string = "";
@@ -7,7 +7,7 @@ class DataBase {
 
     }
 
-    async createDatabase(dbName: string): Promise<IDBDatabase> {
+    async start(dbName: string): Promise<IDBDatabase> {
         this.name = dbName;
         
         let openDatabaseRequest: IDBOpenDBRequest = indexedDB.open(dbName);
@@ -18,6 +18,10 @@ class DataBase {
                 this.connection = (event.target as IDBOpenDBRequest).result;
 
                 resolve(this.connection)
+
+                /*setTimeout(() => {
+                    resolve(this.connection)
+                }, 2000);*/
             };
 
             openDatabaseRequest.onerror = (event: Event) => {
@@ -117,17 +121,22 @@ class DataBase {
         
     }
 
-    async insert (storeNames: string, data: any): Promise<any> {
+    async insert (source: string, data: any): Promise<any> {
 
         return new Promise((resolve, reject) => {
 
             if(!this.connection || !this.isConnectionOpen()) {
-                return reject("Base de datos no encontrada");
+                reject({
+                    message: "No se ha podido establecer la conexion a base de datos" + source,
+                    data: data
+                });
+
+                return;
             }
     
             let localConnection = this.connection;
 
-            let transaction = localConnection.transaction(storeNames, "readwrite");
+            let transaction = localConnection.transaction(source, "readwrite");
 
             transaction.oncomplete = (event: Event) => {
                 resolve(event);
@@ -137,7 +146,7 @@ class DataBase {
                 reject(event);
             }
 
-            let objectstore = transaction.objectStore(storeNames);
+            let objectstore = transaction.objectStore(source);
 
             objectstore.add(data)
 
@@ -201,4 +210,4 @@ class DataBase {
     }
 }
 
-export default DataBase;
+export default Database;
